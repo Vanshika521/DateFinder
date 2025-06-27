@@ -42,4 +42,14 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
+
+
+
+    implementation libs.material.v1110
+    // ML-Kit on-device text recognition (offline)
+    implementation "com.google.mlkit:text-recognition:16.0.1"
+
+    // Kotlin coroutines (optional, used below)
+    implementation libs.kotlinx.coroutines.android
+
 }
