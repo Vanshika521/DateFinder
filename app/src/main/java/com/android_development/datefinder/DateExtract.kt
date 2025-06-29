@@ -20,4 +20,5 @@ class DateExtract {
             // helper for quick static-style access
             fun find(text: String): String? = DateExtract().find(text)
         }
+
 }

@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 val finalText = date?.let { formatDate(it) } ?: "No date detected"
                 speakAndShow(finalText)
 
-               // speakAndShow(date)
+                speakAndShow(date)
                 /*
                 val extractor = DateExtract()
 val rawDate = extractor.find(visionText.text)
