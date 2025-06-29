@@ -50,6 +50,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun formatDate(raw: String): String {
+        return try {
+            val input = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
+            val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
+            val date = input.parse(raw)
+            output.format(date!!)
+        } catch (e: Exception) {
+            raw  // fallback: just return original if it fails
+        }
+    }
+
+
     /** run ML Kit OCR and extract date */
     private fun processImage(uri: Uri) {
         val stream = contentResolver.openInputStream(uri)
@@ -65,9 +77,17 @@ class MainActivity : AppCompatActivity() {
 
                 val extractor = DateExtract()
                 val date = extractor.find(visionText.text)
+                val finalText = date?.let { formatDate(it) } ?: "No date detected"
+                speakAndShow(finalText)
+
+               // speakAndShow(date)
+                /*
+                val extractor = DateExtract()
+val rawDate = extractor.find(visionText.text)
 
 
-                speakAndShow(date)
+
+                 */
             }
             .addOnFailureListener {
                 speakAndShow(null)
