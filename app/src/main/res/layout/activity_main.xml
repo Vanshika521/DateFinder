@@ -3,16 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F0EDCC">
 
     <Button
         android:id="@+id/btnPick"
         style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:backgroundTint="#02343F"
+        android:textColor="@color/white"
         android:text="Choose Image"
         android:textSize="18sp"
         app:layout_constraintTop_toTopOf="parent"

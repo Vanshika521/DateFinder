@@ -1,6 +1,5 @@
 package com.android_development.datefinder
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -10,20 +9,26 @@ import android.speech.tts.TextToSpeech
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
-import java.util.Locale
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-
-
-
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tvResult: TextView
-    private lateinit var tts: TextToSpeech
-    private val pickCode = 123
+    private lateinit var tvResult : TextView
+    private lateinit var tts : TextToSpeech
+
+    /** ← NEW: single Activity‑Result contract that still opens the Gallery app */
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val uri: Uri? = result.data?.data
+                uri?.let { processImage(it) }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,70 +38,43 @@ class MainActivity : AppCompatActivity() {
         tvResult = findViewById(R.id.tvResult)
         findViewById<Button>(R.id.btnPick).setOnClickListener { openGallery() }
 
-        tts = TextToSpeech(this) { tts.language = Locale.US }
+        tts = TextToSpeech(this) { tts.language = Locale.US } // German voice
     }
 
-    /** open gallery to pick an image */
+    /** OPEN GALLERY exactly like before, just launch through the contract */
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        //********
-        startActivityForResult(intent, pickCode)
+        val intent = android.content.Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        pickImage.launch(intent)     // ← uses new API but same Gallery UI
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == pickCode && resultCode == Activity.RESULT_OK) {
-            data?.data?.let { uri -> processImage(uri) }
-        }
-    }
+    // ---------- your helper functions stay the same ----------
 
-    private fun formatDate(raw: String): String {
-        return try {
-            val input = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
-            val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
-            val date = input.parse(raw)
-            output.format(date!!)
-        } catch (e: Exception) {
-            raw  // fallback: just return original if it fails
-        }
-    }
+    private fun formatDate(raw: String): String = try {
+        val input  = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
+        val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
+        output.format(input.parse(raw)!!)
+    } catch (e: Exception) { raw }
 
-
-    /** run ML Kit OCR and extract date */
     private fun processImage(uri: Uri) {
-        val stream = contentResolver.openInputStream(uri)
-        val bitmap = BitmapFactory.decodeStream(stream)
-        val image = InputImage.fromBitmap(bitmap, 0)
+        val stream  = contentResolver.openInputStream(uri)
+        val bitmap  = BitmapFactory.decodeStream(stream)
+        val image   = InputImage.fromBitmap(bitmap, 0)
+        val recog   = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-
-
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-              //  val date = DateExtract.find(visionText.text)
-
-                val extractor = DateExtract()
-                val date = extractor.find(visionText.text)
-                val finalText = date?.let { formatDate(it) } ?: "No date detected"
-                speakAndShow(finalText)
-
-               // speakAndShow(date)
-                /*
-                val extractor = DateExtract()
-val rawDate = extractor.find(visionText.text)
-
-
-
-                 */
+        recog.process(image)
+            .addOnSuccessListener { vision ->
+                val date  = DateExtract().find(vision.text)
+                val msg   = date?.let { formatDate(it) } ?: "No date detected"
+                speakAndShow(msg)
             }
-            .addOnFailureListener {
-                speakAndShow(null)
-            }
+            .addOnFailureListener { speakAndShow(null) }
     }
 
-    /** show result and speak it */
-    private fun speakAndShow(date: String?) {
-        val msg = date ?: "No date detected"
+    private fun speakAndShow(text: String?) {
+        val msg = text ?: "No date detected"
         tvResult.text = msg
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null)
     }
