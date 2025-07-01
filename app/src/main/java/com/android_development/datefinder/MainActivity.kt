@@ -52,12 +52,6 @@ class MainActivity : AppCompatActivity() {
 
     // ---------- your helper functions stay the same ----------
 
-    private fun formatDate(raw: String): String = try {
-        val input  = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
-        val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
-        output.format(input.parse(raw)!!)
-    } catch (e: Exception) { raw }
-
     private fun processImage(uri: Uri) {
         val stream  = contentResolver.openInputStream(uri)
         val bitmap  = BitmapFactory.decodeStream(stream)
@@ -72,6 +66,56 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { speakAndShow(null) }
     }
+
+//     private fun formatDate(raw: String): String = try {
+//         val input  = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
+//         val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
+//         output.format(input.parse(raw)!!)
+//     } catch (e: Exception) { raw }
+
+
+    /** Converts raw OCR text into spoken “d MMMM yyyy”.
+     *  Falls back to the raw text if no pattern matches.               */
+    private fun formatDate(raw: String): String {
+
+        // 1. Remove stray spaces / dots / commas the OCR might add.
+        val cleaned = raw.trim()
+            .replace("[^0-9/\\-]".toRegex(), "")   // keep only digits, / or -
+
+        // 2. Output style: 1 July 2025
+        val outFmt = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
+
+        // 3. Try patterns in order.
+        val patterns = listOf(
+            Regex("""^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$"""), // yyyy/MM/dd
+            Regex("""^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$"""), // dd/MM/yyyy
+            Regex("""^(\d{1,2})[/-](\d{1,2})[/-](\d{2})$""")  // dd/MM/yy
+        )
+
+        for (rx in patterns) {
+            val m = rx.find(cleaned) ?: continue
+            val (a, b, c) = m.destructured          // capture groups
+
+            // 4. Map captures → day / month / year
+            val (day, month, year) = when (rx) {
+                patterns[0] -> Triple(c.toInt(), b.toInt(), a.toInt())          // yyyy/MM/dd
+                patterns[1] -> Triple(a.toInt(), b.toInt(), c.toInt())          // dd/MM/yyyy
+                else        -> Triple(a.toInt(), b.toInt(), 2000 + c.toInt())   // dd/MM/yy
+            }
+
+            // 5. Build a Calendar & format it.
+            return java.util.Calendar.getInstance().apply {
+                set(year, month - 1, day)   // Calendar month is 0‑based
+            }.let { cal -> outFmt.format(cal.time) }
+        }
+
+        // 6. No match → return what OCR produced.
+        return raw
+    }
+
+
+
+
 
     private fun speakAndShow(text: String?) {
         val msg = text ?: "No date detected"
