@@ -57,17 +57,18 @@ DateFinder/
 3. Allow Gradle to sync
 
 4. Run the app on an emulator or real device
+5. 
 
-🧪 How to Test
+##🧪 How to Test
   1. Click “Choose Image”
 
   2. Select an image containing a printed date like 15/08/2025
 
   3. App will:
 
-    • Detect and display the first valid date
+  • Detect and display the first valid date
 
-    • Speak it aloud using Text-to-Speech
+  • Speak it aloud using Text-to-Speech
 
 
 
