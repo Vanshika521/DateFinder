@@ -23,7 +23,27 @@ An AI-powered Android app that extracts the **first relevant date** from an imag
 
 ---
 
-<pre><code>## 📦 Project Structure ``` DateFinder/ │ ├── app/ │ ├── src/ │ │ ├── main/ │ │ │ ├── java/com/android_development/datefinder/ │ │ │ │ ├── MainActivity.kt │ │ │ │ ├── DateExtract.kt │ │ │ │ └── SplashScreen.kt │ │ │ └── res/ │ │ │ ├── layout/ │ │ │ │ ├── activity_main.xml │ │ │ │ └── activity_splash.xml │ │ │ ├── drawable/ │ │ │ └── values/ │ └── build.gradle └── README.md ``` </code></pre>
+## 📦 Project Structure
+
+```
+DateFinder/
+├── app/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/android_development/datefinder/
+│   │   │   │   ├── MainActivity.kt
+│   │   │   │   ├── DateExtract.kt
+│   │   │   │   └── SplashScreen.kt
+│   │   │   └── res/
+│   │   │       ├── layout/
+│   │   │       │   ├── activity_main.xml
+│   │   │       │   └── activity_splash.xml
+│   │   │       ├── drawable/
+│   │   │       └── values/
+│   └── build.gradle
+└── README.md
+```
+
 
 ---
 
@@ -40,7 +60,7 @@ An AI-powered Android app that extracts the **first relevant date** from an imag
 4. Run the app on an emulator or real device
    
 
-##🧪 How to Test
+## 🧪 How to Test
   1. Click “Choose Image”
 
   2. Select an image containing a printed date like 15/08/2025
