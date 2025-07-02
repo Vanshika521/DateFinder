@@ -16,9 +16,9 @@ class DateExtract {
             return null
         }
 
-        companion object {
-            // helper for quick static-style access
-            fun find(text: String): String? = DateExtract().find(text)
-        }
+//        companion object {
+//            // helper for quick static-style access
+//            fun find(text: String): String? = DateExtract().find(text)
+//        }
 
 }

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     /** OPEN GALLERY exactly like before, just launch through the contract */
     private fun openGallery() {
-        val intent = android.content.Intent(
+        val intent = Intent(
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         )
@@ -112,9 +112,6 @@ class MainActivity : AppCompatActivity() {
         // 6. No match → return what OCR produced.
         return raw
     }
-
-
-
 
 
     private fun speakAndShow(text: String?) {
