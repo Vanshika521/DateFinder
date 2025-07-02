@@ -8,7 +8,7 @@ An AI-powered Android app that extracts the **first relevant date** from an imag
 
 - Pick an image from your gallery
 - Detect printed dates in formats like:
-  - `dd/MM/yyyy`, `yyyy-MM-dd`, `dd/MM/yy`, `dd-MM-yyyy	`, etc.
+  - `dd/MM/yyyy`, `yyyy-MM-dd`, `dd/MM/yy`, `dd-MM-yyyy`, etc.
 - Automatically speak the detected date
 - User-friendly interface and accessible design
 
@@ -71,7 +71,15 @@ DateFinder/
 
      • Speak it aloud using Text-to-Speech
 
- <pre><code>📄 Supported Date Formats | Format Type | Example | |---------------|--------------| | dd/MM/yyyy | 15/08/2025 | | yyyy/MM/dd | 2025/08/15 | | dd/MM/yy | 15/08/25 | | dd-MM-yyyy | 15-08-2025 | | MM-dd-yyyy | 08-15-2025 | </code></pre>
+ ## 📄 Supported Date Formats
+
+| Format Type   | Example      |
+|---------------|--------------|
+| dd/MM/yyyy    | 15/08/2025   |
+| yyyy/MM/dd    | 2025/08/15   |
+| dd/MM/yy      | 15/08/25     |
+| dd-MM-yyyy    | 15-08-2025   |
+| MM-dd-yyyy    | 08-15-2025   |
 
 
 📚 Future Improvements
