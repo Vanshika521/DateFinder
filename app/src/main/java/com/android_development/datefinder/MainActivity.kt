@@ -77,39 +77,31 @@ class MainActivity : AppCompatActivity() {
     /** Converts raw OCR text into spoken “d MMMM yyyy”.
      *  Falls back to the raw text if no pattern matches.               */
     private fun formatDate(raw: String): String {
-
-        // 1. Remove stray spaces / dots / commas the OCR might add.
-        val cleaned = raw.trim()
-            .replace("[^0-9/\\-]".toRegex(), "")   // keep only digits, / or -
-
-        // 2. Output style: 1 July 2025
+        val cleaned = raw.trim().replace("[^0-9/\\-.]".toRegex(), "")
         val outFmt = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
 
-        // 3. Try patterns in order.
         val patterns = listOf(
-            Regex("""^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$"""), // yyyy/MM/dd
-            Regex("""^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$"""), // dd/MM/yyyy
-            Regex("""^(\d{1,2})[/-](\d{1,2})[/-](\d{2})$""")  // dd/MM/yy
+            Regex("""^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$"""), // yyyy/MM/dd
+            Regex("""^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$"""), // dd/MM/yyyy
+            Regex("""^(\d{1,2})[./-](\d{1,2})[./-](\d{2})$""")  // dd/MM/yy
         )
 
         for (rx in patterns) {
-            val m = rx.find(cleaned) ?: continue
-            val (a, b, c) = m.destructured          // capture groups
+            val match = rx.find(cleaned) ?: continue
+            val (a, b, c) = match.destructured
 
-            // 4. Map captures → day / month / year
             val (day, month, year) = when (rx) {
-                patterns[0] -> Triple(c.toInt(), b.toInt(), a.toInt())          // yyyy/MM/dd
-                patterns[1] -> Triple(a.toInt(), b.toInt(), c.toInt())          // dd/MM/yyyy
-                else        -> Triple(a.toInt(), b.toInt(), 2000 + c.toInt())   // dd/MM/yy
+                patterns[0] -> Triple(c.toInt(), b.toInt(), a.toInt())
+                patterns[1] -> Triple(a.toInt(), b.toInt(), c.toInt())
+                else        -> Triple(a.toInt(), b.toInt(), 2000 + c.toInt())
             }
 
-            // 5. Build a Calendar & format it.
-            return java.util.Calendar.getInstance().apply {
-                set(year, month - 1, day)   // Calendar month is 0‑based
-            }.let { cal -> outFmt.format(cal.time) }
+            if (month in 1..12 && day in 1..31) {
+                return java.util.Calendar.getInstance().apply {
+                    set(year, month - 1, day)
+                }.let { outFmt.format(it.time) }
+            }
         }
-
-        // 6. No match → return what OCR produced.
         return raw
     }
 
