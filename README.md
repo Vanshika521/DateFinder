@@ -85,9 +85,13 @@ DateFinder/
 | dd.MM.yy      | 15.08.25     |
 | yyyy.MM.dd    | 2025.08.15   |
 
+## 📦 APK Download
 
+You can download and install the latest APK for testing:
 
-📚 Future Improvements
+👉 [Download APK](https://gofile.io/d/your-link-id)
+
+## 📚 Future Improvements
   •  Support for month-name formats like 01-Jan-2025
 
   •  Camera-based image input
