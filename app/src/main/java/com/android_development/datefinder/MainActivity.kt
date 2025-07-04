@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvResult : TextView
     private lateinit var tts : TextToSpeech
 
-    /** ← NEW: single Activity‑Result contract that still opens the Gallery app */
+    //Open Gallery , get img using Activity Result API
     private val pickImage =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -35,13 +35,15 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // Initialize TextView and Button
         tvResult = findViewById(R.id.tvResult)
         findViewById<Button>(R.id.btnPick).setOnClickListener { openGallery() }
 
+        //TTS initialize
         tts = TextToSpeech(this) { tts.language = Locale.US } // German voice
     }
 
-    /** OPEN GALLERY exactly like before, just launch through the contract */
+    // Open Gallery to pick img
     private fun openGallery() {
         val intent = Intent(
             Intent.ACTION_PICK,
@@ -50,8 +52,7 @@ class MainActivity : AppCompatActivity() {
         pickImage.launch(intent)     // ← uses new API but same Gallery UI
     }
 
-    // ---------- your helper functions stay the same ----------
-
+    // Process the img and Apply OCR(optical character recognition)
     private fun processImage(uri: Uri) {
         val stream  = contentResolver.openInputStream(uri)
         val bitmap  = BitmapFactory.decodeStream(stream)
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         recog.process(image)
             .addOnSuccessListener { vision ->
+                //Extract Date from the text detected
                 val date  = DateExtract().find(vision.text)
                 val msg   = date?.let { formatDate(it) } ?: "No date detected"
                 speakAndShow(msg)
@@ -67,19 +69,12 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { speakAndShow(null) }
     }
 
-//     private fun formatDate(raw: String): String = try {
-//         val input  = java.text.SimpleDateFormat("dd/MM/yy", Locale.US)
-//         val output = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
-//         output.format(input.parse(raw)!!)
-//     } catch (e: Exception) { raw }
-
-
-    /** Converts raw OCR text into spoken “d MMMM yyyy”.
-     *  Falls back to the raw text if no pattern matches.               */
+    // Format the Date string to readable form "07 December 2021"
     private fun formatDate(raw: String): String {
         val cleaned = raw.trim().replace("[^0-9/\\-.]".toRegex(), "")
         val outFmt = java.text.SimpleDateFormat("d MMMM yyyy", Locale.US)
 
+        //Patterns to match different date formats
         val patterns = listOf(
             Regex("""^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$"""), // yyyy/MM/dd
             Regex("""^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$"""), // dd/MM/yyyy
@@ -102,16 +97,18 @@ class MainActivity : AppCompatActivity() {
                 }.let { outFmt.format(it.time) }
             }
         }
+        // return the original text if no pattern match
         return raw
     }
 
-
+    //Show result and speak detected date
     private fun speakAndShow(text: String?) {
         val msg = text ?: "No date detected"
         tvResult.text = msg
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
+    //release TTS
     override fun onDestroy() {
         tts.shutdown()
         super.onDestroy()

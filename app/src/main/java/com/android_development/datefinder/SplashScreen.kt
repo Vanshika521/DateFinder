@@ -14,6 +14,7 @@ class SplashScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        //Animation Added
         val topAnim = AnimationUtils.loadAnimation(this, R.anim.topanim)
         val image = findViewById<ImageView>(R.id.img)
         image.startAnimation(topAnim)
