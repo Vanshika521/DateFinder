@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         )
-        pickImage.launch(intent)     // ← uses new API but same Gallery UI
+        pickImage.launch(intent)
     }
 
     // Process the img and Apply OCR(optical character recognition)
