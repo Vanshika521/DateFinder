@@ -89,7 +89,7 @@ DateFinder/
 
 You can download and install the latest APK for testing:
 
-👉 [Download APK](https://gofile.io/d/fnZMgv)
+👉 [Download APK](https://github.com/Vanshika521/DateFinder/releases/download/v1.0.0/DateFinder_Vanshika.apk)
 
 ## 📚 Future Improvements
   •  Support for month-name formats like 01-Jan-2025
